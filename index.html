@@ -51,6 +51,7 @@
             position: relative;
             z-index: 2;
             touch-action: none;
+            cursor: pointer;
         }
         .rainbow-bg {
             position: absolute;
@@ -75,16 +76,17 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 20;
-            background: rgba(8, 8, 16, 0.9);
+            z-index: 50;
+            background: rgba(8, 8, 16, 0.92);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             padding: 24px;
             text-align: center;
+            pointer-events: auto;
         }
         .hidden {
             display: none !important;
-            pointer-events: none;
+            pointer-events: none !important;
         }
         h1 {
             font-size: clamp(2rem, 7vw, 2.8rem);
@@ -104,6 +106,8 @@
             line-height: 1.5;
         }
         .btn {
+            position: relative;
+            z-index: 60;
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
             border: none;
@@ -113,10 +117,14 @@
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
-            transition: transform 0.1s ease;
+            transition: transform 0.1s ease, filter 0.15s ease;
             margin: 8px;
             min-width: 210px;
+            pointer-events: auto;
             touch-action: manipulation;
+        }
+        .btn:hover {
+            filter: brightness(1.12);
         }
         .btn:active {
             transform: scale(0.96);
@@ -124,7 +132,7 @@
         .btn-secondary {
             background: linear-gradient(135deg, #1e293b, #0f172a);
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
         }
         #status-bar {
             position: absolute;
@@ -134,18 +142,18 @@
             display: flex;
             justify-content: space-between;
             padding: 0 20px;
-            z-index: 5;
+            z-index: 10;
             pointer-events: none;
         }
         .hud-card {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             padding: 8px 18px;
             border-radius: 30px;
             font-weight: 800;
             font-size: 0.95rem;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.12);
             box-shadow: 0 6px 20px rgba(0,0,0,0.4);
         }
         #chest-reward-container {
@@ -153,11 +161,12 @@
             bottom: 120px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 15;
+            z-index: 30;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            pointer-events: auto;
             touch-action: manipulation;
         }
         .chest-box {
@@ -220,6 +229,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            pointer-events: auto;
             touch-action: manipulation;
         }
         .item-card.locked {
@@ -245,7 +255,7 @@
             bottom: max(24px, env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
-            z-index: 15;
+            z-index: 30;
             padding: 12px 24px;
             font-size: 0.95rem;
             min-width: auto;
@@ -265,38 +275,25 @@
     <!-- Download Prompt -->
     <div id="download-modal" class="overlay">
         <h1>Want to download this game?</h1>
-        <p>Launch the official app on the Google Play Store, or tap No to play directly on your device.</p>
-        <button type="button" class="btn" id="dl-yes">Yes, Download</button>
-        <button type="button" class="btn btn-secondary" id="dl-no">No</button>
+        <p>Launch the official app on the Google Play Store, or select No to play directly on your device.</p>
+        <button type="button" class="btn" id="dl-yes" onclick="handleDownloadYes()">Yes, Download</button>
+        <button type="button" class="btn btn-secondary" id="dl-no" onclick="handleDownloadNo()">No</button>
     </div>
 
     <!-- Main Entry Screen -->
     <div id="menu-modal" class="overlay hidden">
         <h1>JUMPY BIRDS</h1>
-        <p>Press Spacebar on Computers/Laptops or Tap the screen on Phones to fly. Unlock outfit chests at milestone levels!</p>
-        <button type="button" class="btn" id="start-play-btn">Tap to Fly</button>
-        <button type="button" class="btn btn-secondary hidden" id="menu-closet-btn">Wardrobe Closet 👑</button>
+        <p>Press Spacebar, Click, or Touch on Computers/Laptops, or Tap the screen on Phones to fly!</p>
+        <button type="button" class="btn" id="start-play-btn" onclick="launchMainGameEngine()">Tap to Fly</button>
+        <button type="button" class="btn btn-secondary hidden" id="menu-closet-btn" onclick="populateClosetUI()">Wardrobe Closet 👑</button>
     </div>
 
     <!-- Dressing Room -->
     <div id="closet-panel" class="overlay hidden">
         <h1>Dressing Closet</h1>
-        <p>Tap an unlocked item to equip or remove it.</p>
+        <p>Select an unlocked item to equip or remove it.</p>
         <div class="closet-grid" id="closet-items-grid"></div>
-        <button type="button" class="btn" id="close-closet-btn">Save & Close</button>
+        <button type="button" class="btn" id="close-closet-btn" onclick="closeClosetView()">Save & Close</button>
     </div>
 
     <!-- Milestone Chest -->
-    <div id="chest-reward-container" class="hidden">
-        <div class="chest-box"></div>
-        <div class="chest-text" id="chest-alert-lbl">CLAIM REWARD!</div>
-    </div>
-
-    <button type="button" class="btn btn-secondary hidden" id="customize-trigger-btn">Customize Outfit 👑</button>
-
-    <canvas id="gameCanvas"></canvas>
-</div>
-
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
