@@ -1,1 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Jumpy Birds</title>
+    <style>
+        :root {
+            --rainbow-grad: linear-gradient(45deg, #ff2400, #e81d1d, #e8b01d, #1de840, #1ddde8, #2b1de8, #dd00ff);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        body {
+            background: #06060c;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            max-height: 850px;
+            background: #0b0b18;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            overflow: hidden;
+            border-radius: 0;
+        }
+        @media(min-width: 481px) {
+            #game-container {
+                border-radius: 16px;
+                height: 95vh;
+                border: 2px solid rgba(255, 255, 255, 0.08);
+            }
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+        .rainbow-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--rainbow-grad);
+            background-size: 400% 400%;
+            animation: rainbowFlow 10s ease infinite;
+            opacity: 0.12;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes rainbowFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            background: rgba(8, 8, 16, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: opacity 0.3s ease;
+            padding: 30px;
+            text-align: center;
+        }
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.7);
+            background: linear-gradient(135deg, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-bottom: 35px;
+            max-width: 320px;
+            line-height: 1.6;
+        }
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 16px 36px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
+            margin: 10px;
+            min-width: 220px;
+            letter-spacing: 0.5px;
+        }
+        .btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        #status-bar {
+            position: absolute;
+            top: 24px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .hud-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            letter-spacing: 0.5px;
+        }
+        #chest-reward-container {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .chest-box {
+            width: 84px;
+            height: 76px;
+            background: #d97706;
+            border-radius: 14px;
+            border: 4px solid #78350f;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(217, 119, 6, 0.45);
+            animation: chestBounce 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+        }
+        .chest-box::before {
+            content: '';
+            position: absolute;
+            top: 26px; left: 0; width: 100%; height: 6px;
+            background: #78350f;
+        }
+        .chest-box::after {
+            content: '';
+            position: absolute;
+            top: 20px; left: 32px; width: 12px; height: 16px;
+            background: #1e293b;
+            border-radius: 4px;
+            border: 2px solid #fbbf24;
+        }
+        @keyframes chestBounce {
+            0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+            50% { transform: translateY(-16px) scale(1.08) rotate(3deg); }
+            70% { transform: translateY(0) scale(0.96) rotate(-3deg); }
+        }
+        .chest-text {
+            margin-top: 14px;
+            font-size: 0.85rem;
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            letter-spacing: 0.5px;
+        }
+        #closet-panel {
+            background: rgba(8, 8, 16, 0.98);
+            border-top: 4px solid #2563eb;
+        }
+        .closet-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 400px;
+            margin: 25px 0;
+        }
+        .item-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 16px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .item-card:hover:not(.locked) {
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateY(-2px);
+        }
+        .item-card.locked {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+        .item-card.active {
+            border-color: #fbbf24;
+            background: rgba(245, 158, 11, 0.12);
+            box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.15);
+        }
+        .item-icon {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+        }
+        .item-label {
+            font-size: 0.8rem;
+            color: #f1f5f9;
+            font-weight: 700;
+            text-align: center;
+        }
+        #customize-trigger-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;
+            padding: 12px 26px;
+            font-size: 0.95rem;
+            min-width: auto;
+        }
+    </style>
+</head>
+<body>
 
+<div id="game-container">
+    <div id="rainbow-bg" class="rainbow-bg"></div>
+
+    <div id="status-bar">
+        <div class="hud-card" id="hud-level">Level: 1</div>
+        <div class="hud-card" id="hud-score">Score: 0</div>
+    </div>
+
+    <!-- Download Prompt Interceptor -->
+    <div id="download-modal" class="overlay">
+        <h1>Want to download this game?</h1>
+        <p>Launch the official mobile build directly from the Google Play Store for smooth performance, or tap No to play in your browser.</p>
+        <button class="btn" id="dl-yes">Yes, Download</button>
+        <button class="btn btn-secondary" id="dl-no">No</button>
+    </div>
+
+    <!-- Main Entry Screen -->
+    <div id="menu-modal" class="overlay hidden">
+        <h1 style="font-size: 3.2rem;">JUMPY BIRDS</h1>
+        <p>Tap or press Spacebar to fly. Reach milestone levels to unlock chests and customize your bird!</p>
+        <button class="btn" id="start-play-btn">Tap to Fly</button>
+        <button class="btn btn-secondary hidden" id="menu-closet-btn">Wardrobe Closet 👑</button>
+    </div>
+
+    <!-- Dressing Room Component -->
+    <div id="closet-panel" class="overlay hidden">
+        <h1>Dressing Closet</h1>
+        <p>Equip unlocked outfits to customize your bird.</p>
+        <div class="closet-grid" id="closet-items-grid"></div>
+        <button class="btn" id="close-closet-btn">Save & Close</button>
+    </div>
+
+    <div id="chest-reward-container" class="hidden">
+      
