@@ -14,33 +14,33 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none;
+            -webkit-touch-callout: none;
         }
-        body {
+        html, body {
             background: #06060c;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            width: 100%;
+            height: 100dvh;
             color: #fff;
         }
         #game-container {
             position: relative;
             width: 100%;
             max-width: 480px;
-            height: 100vh;
+            height: 100dvh;
             max-height: 850px;
             background: #0b0b18;
             box-shadow: 0 0 50px rgba(0,0,0,0.9);
             overflow: hidden;
-            border-radius: 0;
         }
         @media(min-width: 481px) {
             #game-container {
                 border-radius: 16px;
-                height: 95vh;
+                height: 92dvh;
                 border: 2px solid rgba(255, 255, 255, 0.08);
             }
         }
@@ -50,6 +50,7 @@
             height: 100%;
             position: relative;
             z-index: 2;
+            touch-action: none;
         }
         .rainbow-bg {
             position: absolute;
@@ -60,7 +61,7 @@
             opacity: 0.12;
             z-index: 1;
             pointer-events: none;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.6s ease;
         }
         @keyframes rainbowFlow {
             0% { background-position: 0% 50%; }
@@ -74,21 +75,19 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 10;
-            background: rgba(8, 8, 16, 0.88);
+            z-index: 20;
+            background: rgba(8, 8, 16, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            transition: opacity 0.3s ease;
-            padding: 30px;
+            padding: 24px;
             text-align: center;
         }
         .hidden {
             display: none !important;
-            opacity: 0;
             pointer-events: none;
         }
         h1 {
-            font-size: 2.8rem;
+            font-size: clamp(2rem, 7vw, 2.8rem);
             margin-bottom: 12px;
             font-weight: 900;
             letter-spacing: 2px;
@@ -98,110 +97,106 @@
             -webkit-text-fill-color: transparent;
         }
         p {
-            font-size: 0.95rem;
+            font-size: clamp(0.88rem, 3.5vw, 0.98rem);
             color: #94a3b8;
-            margin-bottom: 35px;
+            margin-bottom: 28px;
             max-width: 320px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         .btn {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
             border: none;
-            padding: 16px 36px;
+            padding: 15px 32px;
             font-size: 1.05rem;
             font-weight: 700;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
-            transition: transform 0.1s, box-shadow 0.1s;
-            margin: 10px;
-            min-width: 220px;
-            letter-spacing: 0.5px;
+            transition: transform 0.1s ease;
+            margin: 8px;
+            min-width: 210px;
+            touch-action: manipulation;
         }
         .btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: scale(0.96);
         }
         .btn-secondary {
             background: linear-gradient(135deg, #1e293b, #0f172a);
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
         }
         #status-bar {
             position: absolute;
-            top: 24px;
+            top: max(16px, env(safe-area-inset-top));
             left: 0;
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 0 20px;
             z-index: 5;
             pointer-events: none;
         }
         .hud-card {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 10px 22px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 8px 18px;
             border-radius: 30px;
             font-weight: 800;
-            font-size: 1rem;
-            border: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.95rem;
+            border: 1px solid rgba(255,255,255,0.1);
             box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            letter-spacing: 0.5px;
         }
         #chest-reward-container {
             position: absolute;
-            bottom: 140px;
+            bottom: 120px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 8;
+            z-index: 15;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            touch-action: manipulation;
         }
         .chest-box {
-            width: 84px;
-            height: 76px;
+            width: 80px;
+            height: 72px;
             background: #d97706;
             border-radius: 14px;
             border: 4px solid #78350f;
             position: relative;
             box-shadow: 0 12px 30px rgba(217, 119, 6, 0.45);
-            animation: chestBounce 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+            animation: chestBounce 1.2s ease infinite;
         }
         .chest-box::before {
             content: '';
             position: absolute;
-            top: 26px; left: 0; width: 100%; height: 6px;
+            top: 24px; left: 0; width: 100%; height: 6px;
             background: #78350f;
         }
         .chest-box::after {
             content: '';
             position: absolute;
-            top: 20px; left: 32px; width: 12px; height: 16px;
+            top: 18px; left: 30px; width: 12px; height: 16px;
             background: #1e293b;
             border-radius: 4px;
             border: 2px solid #fbbf24;
         }
         @keyframes chestBounce {
-            0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
-            50% { transform: translateY(-16px) scale(1.08) rotate(3deg); }
-            70% { transform: translateY(0) scale(0.96) rotate(-3deg); }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.06); }
         }
         .chest-text {
-            margin-top: 14px;
-            font-size: 0.85rem;
+            margin-top: 12px;
+            font-size: 0.82rem;
             background: #f59e0b;
             color: #0f172a;
-            padding: 6px 16px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-weight: 900;
             white-space: nowrap;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-            letter-spacing: 0.5px;
         }
         #closet-panel {
             background: rgba(8, 8, 16, 0.98);
@@ -210,53 +205,48 @@
         .closet-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 12px;
             width: 100%;
-            max-width: 400px;
-            margin: 25px 0;
+            max-width: 380px;
+            margin: 20px 0;
         }
         .item-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            padding: 16px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 14px 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .item-card:hover:not(.locked) {
-            background: rgba(255, 255, 255, 0.07);
-            transform: translateY(-2px);
+            touch-action: manipulation;
         }
         .item-card.locked {
-            opacity: 0.25;
+            opacity: 0.3;
             cursor: not-allowed;
         }
         .item-card.active {
             border-color: #fbbf24;
-            background: rgba(245, 158, 11, 0.12);
-            box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.15);
+            background: rgba(245, 158, 11, 0.15);
         }
         .item-icon {
-            font-size: 2.4rem;
-            margin-bottom: 8px;
+            font-size: 2.1rem;
+            margin-bottom: 6px;
         }
         .item-label {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: #f1f5f9;
             font-weight: 700;
             text-align: center;
         }
         #customize-trigger-btn {
             position: absolute;
-            bottom: 30px;
+            bottom: max(24px, env(safe-area-inset-bottom));
             left: 50%;
             transform: translateX(-50%);
-            z-index: 6;
-            padding: 12px 26px;
+            z-index: 15;
+            padding: 12px 24px;
             font-size: 0.95rem;
             min-width: auto;
         }
@@ -272,29 +262,41 @@
         <div class="hud-card" id="hud-score">Score: 0</div>
     </div>
 
-    <!-- Download Prompt Interceptor -->
+    <!-- Download Prompt -->
     <div id="download-modal" class="overlay">
         <h1>Want to download this game?</h1>
-        <p>Launch the official mobile build directly from the Google Play Store for smooth performance, or tap No to play in your browser.</p>
-        <button class="btn" id="dl-yes">Yes, Download</button>
-        <button class="btn btn-secondary" id="dl-no">No</button>
+        <p>Launch the official app on the Google Play Store, or tap No to play directly on your device.</p>
+        <button type="button" class="btn" id="dl-yes">Yes, Download</button>
+        <button type="button" class="btn btn-secondary" id="dl-no">No</button>
     </div>
 
     <!-- Main Entry Screen -->
     <div id="menu-modal" class="overlay hidden">
-        <h1 style="font-size: 3.2rem;">JUMPY BIRDS</h1>
-        <p>Tap or press Spacebar to fly. Reach milestone levels to unlock chests and customize your bird!</p>
-        <button class="btn" id="start-play-btn">Tap to Fly</button>
-        <button class="btn btn-secondary hidden" id="menu-closet-btn">Wardrobe Closet 👑</button>
+        <h1>JUMPY BIRDS</h1>
+        <p>Press Spacebar on Computers/Laptops or Tap the screen on Phones to fly. Unlock outfit chests at milestone levels!</p>
+        <button type="button" class="btn" id="start-play-btn">Tap to Fly</button>
+        <button type="button" class="btn btn-secondary hidden" id="menu-closet-btn">Wardrobe Closet 👑</button>
     </div>
 
-    <!-- Dressing Room Component -->
+    <!-- Dressing Room -->
     <div id="closet-panel" class="overlay hidden">
         <h1>Dressing Closet</h1>
-        <p>Equip unlocked outfits to customize your bird.</p>
+        <p>Tap an unlocked item to equip or remove it.</p>
         <div class="closet-grid" id="closet-items-grid"></div>
-        <button class="btn" id="close-closet-btn">Save & Close</button>
+        <button type="button" class="btn" id="close-closet-btn">Save & Close</button>
     </div>
 
+    <!-- Milestone Chest -->
     <div id="chest-reward-container" class="hidden">
-      
+        <div class="chest-box"></div>
+        <div class="chest-text" id="chest-alert-lbl">CLAIM REWARD!</div>
+    </div>
+
+    <button type="button" class="btn btn-secondary hidden" id="customize-trigger-btn">Customize Outfit 👑</button>
+
+    <canvas id="gameCanvas"></canvas>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
